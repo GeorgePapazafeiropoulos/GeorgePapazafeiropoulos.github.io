@@ -2,20 +2,117 @@
 <html>
 <head>
 
+<style>
+table {
+  font-family: arial, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+td, th {
+  border: 1px solid #dddddd;
+  text-align: left;
+  padding: 8px;
+}
+ </style>
+
 
 </head>
 <body>
 
-<p>Enter the First Number: <input id="first"></p>
-<p>Enter the Second Number: <input id="second"></p>
-<button onclick="add()">Add</button>
-<button onclick="subtract()">Subtract</button>
-<button onclick="multiply()">Multiply</button>
-<button onclick="divide()">Divide</button>
-<p>Result = <input id="answer"></p>
+
+<p><b>DOWEL INTO WOOD ANALYSIS</b></p>
+<br>
+<p><b>INPUTS</b></p>
+<!-- <p><i>This text is italic</i></p>
+ -->
+<!--  <p>This is<sub> subscript</sub> and <sup>superscript</sup></p>
+ -->
+<br>
+<p>SHEAR STRESS</p>
+<p>R<sub>u</sub> = <input id="Ru"></p>
+<br>
+<p>ADJUSTMENT FACTORS</p>
+<p>C<sub>D</sub> = <input id="CD">   &emsp; &emsp;  (LOAD DURATION FACTOR)</p>
+<p>C<sub>M</sub> = <input id="CM">   &emsp; &emsp;  (WET SERVICE FACTOR)</p>
+<p>C<sub>t</sub> = <input id="Ct">   &emsp; &emsp;  (TEMPERATURE FACTOR)</p>
+<br>
+<p>DOWEL FASTENER SIZE</p>
+<p>D = <input id="D"> in </p>
+<br>
+<p>CENTER TO CENTER SPACING</p>
+<p>S = <input id="S"> in </p>
+<br>
+<p>WOOD FASCIA SIZE 2x6 SYP</p>
+<p>b<sub>f</sub> = <input id="bf"> in  &emsp; &emsp;   d<sub>f</sub> = <input id="df"> in </p>
+<!--     <p>This is a &nbsp; regular space.</p>
+    <p>This is a &ensp; two spaces gap.</p>
+    <p>This is a &emsp; four spaces gap.</p>
+ -->
+<br>
+<p>END DISTANCE</p>
+<p>d<sub>e</sub> = <input id="de"> in </p>
+<br>
+<p>END GRAIN FACTOR</p>
+<p>C<sub>eg</sub> = <input id="Ceg"> in </p>
+<br>
+<p>DIAPHRAGM FACTOR</p>
+<p>C<sub>di</sub> = <input id="Cdi"> in </p>
+<br>
+<p>TOE NAIL FACTOR</p>
+<p>C<sub>tn</sub> = <input id="Ctn"> in </p>
+<br>
+<p>LOAD ANGLE</p>
+<p>θ = <input id="theta"> deg </p>
+<br>
+<button onclick="woodConnCalc()">Calculate</button>
+<br>
+<br>
+<br>
+<p><b>OUTPUTS</b></p>
+<table>
+  <tr>
+    <th>YIELD MODE</th>
+    <th>CAPACITY</th>
+  </tr>
+  <tr>
+    <td>I<sub>m</sub></td>
+    <td><input id="Im"></td>
+  </tr>
+  <tr>
+    <td>I<sub>s</sub></td>
+    <td><input id="Is"></td>
+  </tr>
+  <tr>
+    <td>II</td>
+    <td><input id="II"></td>
+  </tr>
+  <tr>
+    <td>III<sub>m</sub></td>
+    <td><input id="IIIm"></td>
+  </tr>
+  <tr>
+    <td>III<sub>s</sub></td>
+    <td><input id="IIIs"></td>
+  </tr>
+  <tr>
+    <td>IV</td>
+    <td><input id="IV"></td>
+  </tr>
+  <tr>
+    <td>Z'=</td>
+    <td><input id="Zprime"></td>
+  </tr>
+  <tr>
+    <td>R<sub>u</sub>/Z'=</td>
+    <td><input id="RuDivZprime"></td>
+  </tr>
+</table>
+
 
 <!-- Execute Javascript script main.js -->	
 <script src="scripts/main.js"></script>
 
 </body>
 </html>
+
