@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Draw Line</title>
+    <style>
+        canvas {
+            border: 1px solid black;
+        }
+        #buttons {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            margin-top: 10px;
+        }
+        button {
+            font-size: 16px;
+            padding: 10px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<h2>1. Generate training data</h2>
+<p>Generate N random points and draw a line which separates them into two groups using the buttons below.</p>
+<p>Information about the slope and intercept of the line is shown to the user under the buttons.</p>
+
+    <canvas id="canvas1" width="400" height="400"></canvas>
+    <div id="buttons">
+        <label for="num-points-input">Number of points (N):</label>
+        <input type="number" id="num-points-input" value="10" min="1" max="10000">
+        <button id="generate-button">Generate random points</button>
+        <button id="draw-button">Draw line</button>
+        <button id="clear-button">Clear canvas</button>
+    </div>
+    <p>Slope: <span id="slope"></span></p>
+    <p>Intercept: <span id="intercept"></span></p>
+
+<h2>2. Train a perceptron to classify the points over and under the line.</h2>
+<p>No information about the slope and intercept of the separating line is given to the perceptron.</p>
+<p>Yet it can classify the points over and under the line after training with high accuracy.</p>
+
+    <div id="buttons">
+        <button id="train-button">Train perceptron</button>
+    </div>
+
+<!-- <p id="demo"></p> -->
+	
+<br>
+
+    <canvas id="canvas2" width="400" height="400"></canvas>
+	
+    <div id="buttons">
+        <button id="generate-button-2">Generate random points</button>
+    </div>
+
+    <div id="buttons">
+        <button id="apply-button">Apply perceptron</button>
+    </div>
+
+	
+<script src="myperceptron.js"></script>
+<!-- <script src="myplotlib.js"></script> -->
+<script src="script2.js"></script>
+	
+	
+</body>
+</html>
