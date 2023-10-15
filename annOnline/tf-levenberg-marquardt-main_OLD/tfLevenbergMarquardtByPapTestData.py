@@ -116,21 +116,21 @@ train_dataset = train_dataset.prefetch(tf.data.experimental.AUTOTUNE)
 print(train_dataset)
 
 # %%
-modelAdam = tf.keras.Sequential([
+model = tf.keras.Sequential([
     #tf.keras.layers.Dense(20, activation='tanh', input_shape=(6,)), # lm works better with tanh than with sigmoid
     tf.keras.layers.Dense(7, activation='sigmoid', input_shape=(6,)),
     tf.keras.layers.Dense(1, activation='linear')])
 
-modelAdam.summary()
+model.summary()
 
-modelAdam.compile(
+model.compile(
     optimizer=tf.keras.optimizers.Adam(learning_rate=0.01),
     loss=tf.keras.losses.MeanSquaredError())
 
-modelLM = lm.ModelWrapper(
-    tf.keras.models.clone_model(modelAdam))
+model_wrapper = lm.ModelWrapper(
+    tf.keras.models.clone_model(model))
 
-modelLM.compile(
+model_wrapper.compile(
     optimizer=tf.keras.optimizers.SGD(learning_rate=0.1),
     loss=lm.MeanSquaredError())
 
@@ -138,7 +138,7 @@ modelLM.compile(
 # %%
 print("Train using Adam")
 t1_start = time.perf_counter()
-modelAdam.fit(train_dataset, epochs=1000)
+model.fit(train_dataset, epochs=1000)
 t1_stop = time.perf_counter()
 print("Elapsed time: ", t1_stop - t1_start)
 # loss value: 2.0443e-04
@@ -147,7 +147,7 @@ print("Elapsed time: ", t1_stop - t1_start)
 print("\n_________________________________________________________________")
 print("Train using Levenberg-Marquardt")
 t2_start = time.perf_counter()
-modelLM.fit(train_dataset, epochs=100)
+model_wrapper.fit(train_dataset, epochs=100)
 t2_stop = time.perf_counter()
 print("Elapsed time: ", t2_stop - t2_start)
 #loss value: 2.3174e-05
@@ -156,8 +156,8 @@ print("Elapsed time: ", t2_stop - t2_start)
 print("\n_________________________________________________________________")
 print("Plot results")
 
-plt.plot(y_test, modelLM.predict(x_test), 'g--', label="adam", linewidth=1)
-plt.plot(y_test, modelLM.predict(x_test), 'r--', label="lm", linewidth=1)
+plt.plot(y_test, model.predict(x_test), 'g--', label="adam", linewidth=1)
+plt.plot(y_test, model_wrapper.predict(x_test), 'r--', label="lm", linewidth=1)
 plt.legend()
 #plt.axis('equal')
 plt.xlim([-1, 5])  # Set your desired x-axis limits
@@ -171,53 +171,116 @@ plt.show()
 
 
 # %%
-# For Adam training Algorithm:
-
 # Extract weights and biases from the input layer
-input_layer_weights = modelAdam.layers[0].get_weights()[0]
-input_layer_biases = modelAdam.layers[0].get_weights()[1]
+input_layer_weights = model.layers[0].get_weights()[0]
+input_layer_biases = model.layers[0].get_weights()[1]
 
 # Extract weights and biases from the hidden layer
-hidden_layer_weights = modelAdam.layers[1].get_weights()[0]
-hidden_layer_biases = modelAdam.layers[1].get_weights()[1]
+hidden_layer_weights = model.layers[1].get_weights()[0]
+hidden_layer_biases = model.layers[1].get_weights()[1]
 
 # Print the extracted weights and biases
 print("Input layer weights:")
-print(input_layer_weights)
+#print(input_layer_weights)
 print(input_layer_weights.shape)
 print("Input layer biases:")
-print(input_layer_biases)
+#print(input_layer_biases)
 print(input_layer_biases.shape)
 print("Hidden layer weights:")
-print(hidden_layer_weights)
+#print(hidden_layer_weights)
 print(hidden_layer_weights.shape)
 print("Hidden layer biases:")
-print(hidden_layer_biases)
+#print(hidden_layer_biases)
 print(hidden_layer_biases.shape)
 
 # %%
-# For LM training Algorithm:
+def garson(A, B):
 
-# Extract weights and biases from the input layer
-input_layer_weights = modelLM.layers[0].get_weights()[0]
-input_layer_biases = modelLM.layers[0].get_weights()[1]
+    B = B.reshape(-1, 1)  # Reshape hidden_layer_weights to a column vector
+    
+    sum1 = np.sum(A, axis=0)
+    sum2 = 0
+    ri = np.zeros((1, A.shape[1]))
 
-# Extract weights and biases from the hidden layer
-#hidden_layer_weights = modelLM.layers[1].get_weights()[0]
-#hidden_layer_biases = modelLM.layers[1].get_weights()[1]
+    for i in range(A.shape[1]):
+        sum2 += np.dot(A[:, i], B[i, 0]) / sum1[i]
 
-# Print the extracted weights and biases
-print("Input layer weights:")
-print(input_layer_weights)
-print(input_layer_weights.shape)
-print("Input layer biases:")
-print(input_layer_biases)
-print(input_layer_biases.shape)
-#print("Hidden layer weights:")
-#print(hidden_layer_weights)
-#print(hidden_layer_weights.shape)
-#print("Hidden layer biases:")
-#print(hidden_layer_biases)
-#print(hidden_layer_biases.shape)
+    ri = sum2 / np.sum(sum2)
+
+    return ri
+
+
+IF1=garson(input_layer_weights, hidden_layer_weights)
+# Create an array of indices for the x-axis
+x_indices = np.arange(len(IF1))
+# Create the bar plot
+plt.bar(x_indices, IF1)
+# Customize plot labels and title
+plt.xlabel('Index')
+plt.ylabel('Value')
+plt.title('Bar Plot of a 6x1 Vector')
+# Show the plot
+plt.show()
+
+IF2=garson(np.abs(input_layer_weights), np.abs(hidden_layer_weights))
+# Create an array of indices for the x-axis
+x_indices = np.arange(len(IF2))
+# Create the bar plot
+plt.bar(x_indices, IF2)
+# Customize plot labels and title
+plt.xlabel('Index')
+plt.ylabel('Value')
+plt.title('Bar Plot of a 6x1 Vector')
+# Show the plot
+plt.show()
+
+# %%
+def garson2(A, B):
+    
+    #Computes Garson's algorithm
+    #A = matrix of weights of input-hidden layer (rows=input & cols=hidden)
+    #B = vector of weights of hidden-output layer
+
+    B = B.reshape(-1, 1)  # Reshape hidden_layer_weights to a column vector
+    #B = np.diag(B)
+
+    # connection weight through the different hidden node
+    cw = np.dot(A, B)
+
+    # weight through node (axis=0 is column; sum per input feature)
+    cw_h = abs(cw).sum(axis=0)
+
+    # relative contribution of input neuron to outgoing signal of each hidden neuron
+    # sum to find relative contribution of input neuron
+    rc = np.divide(abs(cw), abs(cw_h))
+    rc = rc.sum(axis=1)
+
+    # normalize to 100% for relative importance
+    ri = rc / np.sum(rc)
+    return(ri)
+
+IF1=garson2(input_layer_weights, hidden_layer_weights)
+# Create an array of indices for the x-axis
+x_indices = np.arange(len(IF1))
+# Create the bar plot
+plt.bar(x_indices, IF1)
+# Customize plot labels and title
+plt.xlabel('Index')
+plt.ylabel('Value')
+plt.title('Bar Plot of a 6x1 Vector')
+# Show the plot
+plt.show()
+
+IF2=garson2(np.abs(input_layer_weights), np.abs(hidden_layer_weights))
+# Create an array of indices for the x-axis
+x_indices = np.arange(len(IF2))
+# Create the bar plot
+plt.bar(x_indices, IF2)
+# Customize plot labels and title
+plt.xlabel('Index')
+plt.ylabel('Value')
+plt.title('Bar Plot of a 6x1 Vector')
+# Show the plot
+plt.show()
 
 

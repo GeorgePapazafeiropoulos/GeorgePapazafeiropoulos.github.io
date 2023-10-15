@@ -1,0 +1,7 @@
+{
+    "python.analysis.typeCheckingMode": "basic",
+    "notebook.output.scrolling": true,
+    "python.analysis.extraPaths": [
+        "./tf-levenberg-marquardt-main"
+    ]
+}
